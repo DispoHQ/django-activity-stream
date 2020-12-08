@@ -36,7 +36,7 @@ if USE_JSONFIELD:
         DataField = JSONField
     except ImportError as err:
         try:
-            from django_mysql.models import JSONField
+            from django.db.models import JSONField
             DataField = JSONField
 
         except ImportError:
