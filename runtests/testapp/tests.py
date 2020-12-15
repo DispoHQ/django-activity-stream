@@ -33,6 +33,10 @@ class TestAppTests(ActivityBaseTestCase):
             len(self.user.action_object_actions.testbar('was created')),
             0
         )
+        self.assertEqual(
+            len(self.user.related_action_object_actions.testbar('was created')),
+            0
+        )
 
     def test_registration(self):
         instance = Unregistered.objects.create(name='fubar')

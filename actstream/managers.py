@@ -48,6 +48,15 @@ class ActionManager(GFKManager):
         return obj.action_object_actions.public(**kwargs)
 
     @stream
+    def related_action_object(self, obj, **kwargs):
+        """
+        Stream of most recent actions where obj is the related action_object.
+        Keyword arguments will be passed to Action.objects.filter
+        """
+        check(obj)
+        return obj.related_action_object_actions.public(**kwargs)
+
+    @stream
     def model_actions(self, model, **kwargs):
         """
         Stream of most recent actions by any particular model
@@ -57,6 +66,7 @@ class ActionManager(GFKManager):
         return self.public(
             (Q(target_content_type=ctype) |
              Q(action_object_content_type=ctype) |
+             Q(related_action_object_content_type=ctype) |
              Q(actor_content_type=ctype)),
             **kwargs
         )
@@ -64,7 +74,7 @@ class ActionManager(GFKManager):
     @stream
     def any(self, obj, **kwargs):
         """
-        Stream of most recent actions where obj is the actor OR target OR action_object.
+        Stream of most recent actions where obj is the actor OR target OR action_object OR related_action_object.
         """
         check(obj)
         ctype = ContentType.objects.get_for_model(obj)
@@ -78,6 +88,9 @@ class ActionManager(GFKManager):
             ) | Q(
                 action_object_content_type=ctype,
                 action_object_object_id=obj.pk,
+            ) | Q(
+                related_action_object_content_type=ctype,
+                related_action_object_id=obj.pk,
             ), **kwargs)
 
     @stream
@@ -120,6 +133,10 @@ class ActionManager(GFKManager):
             ) | Q(
                 action_object_content_type=content_type,
                 action_object_object_id__in=object_ids.filter(
+                    actor_only=False).values('object_id')
+            ) | Q(
+                related_action_object_content_type=content_type,
+                related_action_object_object_id__in=object_ids.filter(
                     actor_only=False).values('object_id')
             )
 

@@ -28,7 +28,7 @@ def setup_generic_relations(model_class):
     related_attr_value = 'actions_with_%s' % label(model_class)
 
     relations = {}
-    for field in ('actor', 'target', 'action_object'):
+    for field in ('actor', 'target', 'action_object', 'related_action_object'):
         attr = '%s_actions' % field
         attr_value = '{}_as_{}'.format(related_attr_value, field)
         kwargs = {

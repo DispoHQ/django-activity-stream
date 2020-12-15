@@ -15,7 +15,8 @@ class ActionAdmin(ModelAdmin):
     list_editable = ('verb',)
     list_filter = ('timestamp',)
     raw_id_fields = ('actor_content_type', 'target_content_type',
-                     'action_object_content_type')
+                     'action_object_content_type',
+                     'related_action_object_content_type')
 
 
 class FollowAdmin(ModelAdmin):

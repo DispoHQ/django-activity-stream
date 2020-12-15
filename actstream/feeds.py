@@ -82,6 +82,8 @@ class AbstractActivityStream:
             item['target'] = self.format_target(action)
         if action.action_object:
             item['object'] = self.format_action_object(action)
+        if action.related_action_object:
+            item['related_object'] = self.format_related_action_object(action)
         return item
 
     def format_item(self, action, item_type='actor'):
@@ -113,6 +115,12 @@ class AbstractActivityStream:
         Returns a formatted dictionary for the action object of the action.
         """
         return self.format_item(action, 'action_object')
+    
+    def format_related_action_object(self, action):
+        """
+        Returns a formatted dictionary for the action object of the action.
+        """
+        return self.format_item(action, 'related_action_object')
 
 
 class ActivityStreamsAtomFeed(Atom1Feed):
@@ -145,6 +153,7 @@ class ActivityStreamsAtomFeed(Atom1Feed):
         actor = item.pop('actor')
         target = item.pop('target', None)
         action_object = item.pop('action_object', None)
+        related_action_object = item.pop('related_action_object', None)
         content = item.pop('content', None)
 
         if content:
@@ -158,6 +167,9 @@ class ActivityStreamsAtomFeed(Atom1Feed):
 
         if action_object:
             self.item_quick_handler(handler, 'activity:object', action_object)
+
+        if related_action_object:
+            self.item_quick_handler(handler, 'activity:object', related_action_object)
 
         if target:
             self.item_quick_handler(handler, 'activity:target', target)

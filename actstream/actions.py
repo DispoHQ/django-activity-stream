@@ -123,7 +123,7 @@ def action_handler(verb, **kwargs):
         timestamp=kwargs.pop('timestamp', now())
     )
 
-    for opt in ('target', 'action_object'):
+    for opt in ('target', 'action_object', 'related_action_object'):
         obj = kwargs.pop(opt, None)
         if obj is not None:
             check(obj)

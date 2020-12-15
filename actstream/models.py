@@ -107,6 +107,19 @@ class Action(models.Model):
         'action_object_object_id'
     )
 
+    related_action_object_content_type = models.ForeignKey(
+        ContentType, blank=True, null=True,
+        related_name='related_action_object',
+        on_delete=models.CASCADE, db_index=True
+    )
+    related_action_object_object_id = models.CharField(
+        max_length=255, blank=True, null=True, db_index=True
+    )
+    related_action_object = GenericForeignKey(
+        'related_action_object_content_type',
+        'related_action_object_object_id'
+    )
+
     timestamp = models.DateTimeField(default=now, db_index=True)
 
     public = models.BooleanField(default=True, db_index=True)
@@ -121,6 +134,7 @@ class Action(models.Model):
             'actor': self.actor,
             'verb': self.verb,
             'action_object': self.action_object,
+            'related_action_object': self.related_action_object,
             'target': self.target,
             'timesince': self.timesince()
         }
@@ -153,6 +167,13 @@ class Action(models.Model):
         return reverse('actstream_actor', None, (
             self.action_object_content_type.pk, self.action_object_object_id))
 
+    def related_action_object_url(self):
+        """
+        Returns the URL to the ``actstream_related_action_object`` view for the current related action object
+        """
+        return reverse('actstream_actor', None, (
+            self.related_action_object_content_type.pk, self.related_action_object_object_id))
+
     def timesince(self, now=None):
         """
         Shortcut for the ``django.utils.timesince.timesince`` function of the
@@ -168,6 +189,7 @@ class Action(models.Model):
 # convenient accessors
 actor_stream = Action.objects.actor
 action_object_stream = Action.objects.action_object
+related_action_object_stream = Action.objects.related_action_object
 target_stream = Action.objects.target
 user_stream = Action.objects.user
 model_stream = Action.objects.model_actions

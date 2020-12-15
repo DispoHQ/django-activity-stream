@@ -113,6 +113,18 @@ class ActivityTestCase(DataTestCase):
                          'admin created comment admin: Sweet Group!... on '
                          'CoolGroup %s ago' % self.timesince)
 
+    def test_related_action_object(self):
+        created = action.send(self.user1, verb='created comment',
+                              related_action_object=self.comment, target=self.group,
+                              timestamp=self.testdate)[0][1]
+
+        self.assertEqual(created.actor, self.user1)
+        self.assertEqual(created.related_action_object, self.comment)
+        self.assertEqual(created.target, self.group)
+        self.assertEqual(str(created),
+                         'admin created comment admin: Sweet Group!... on '
+                         'CoolGroup %s ago' % self.timesince)
+
     def test_doesnt_generate_duplicate_follow_records(self):
         g = Group.objects.get_or_create(name='DupGroup')[0]
         s = self.User.objects.get_or_create(username='dupuser')[0]
@@ -156,6 +168,7 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(self.user2.actor_actions.count(), 2)
         self.assertEqual(self.user2.target_actions.count(), 1)
         self.assertEqual(self.user2.action_object_actions.count(), 0)
+        self.assertEqual(self.user2.related_action_object_actions.count(), 0)
 
     def test_hidden_action(self):
         testaction = self.user1.actor_actions.all()[0]
